@@ -3,6 +3,16 @@ import torchvision.transforms as T
 import os
 import random
 
+# Program do trenowania modelu YOLO na zbiorze danych samochodów Stanforda
+# Transformacje danych - augmentacja obrazów, aby zwiększyć różnorodność danych treningowych
+# - Odbicie poziome z prawdopodobieństwem 0.5
+# - Rotacja o losowy kąt w zakresie 15 stopni
+# - Zmiany kolorów (jasność, kontrast, nasycenie, odcień)
+# - Konwersja do tensora
+# - Normalizacja z użyciem średnich i odchyleń standardowych dla ImageNet
+
+# ja tego używałem do trenowania modeli i experymentów, działało w porządku
+
 STANFORD_CARS_IMG = "datasets/yolo_format/train"
 STANFORD_CARS_DATA = "datasets/yolo_format/data.yaml"
 STANFORD_CARS_LABELS = "datasets/yolo_format/train"
@@ -21,7 +31,7 @@ data_transforms = T.Compose([
     T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalizacja
 ])
 
-
+# Funkcja do trenowania modelu, opcjonalnie na ograniczonym podzbiorze danych
 def train_model(subset_size=None):
     # Funkcja wybierająca ograniczony subset zdjęć
     def get_subset(images_dir, labels_dir, subset_size):
@@ -39,32 +49,28 @@ def train_model(subset_size=None):
 
         return subset_images, subset_labels
 
-    #images, labels = get_subset(STANFORD_CARS_IMG, STANFORD_CARS_LABELS, subset_size)
 
-    """
-    # Tworzenie datasetu
-    dataset = CustomDataset(
-        images=images,
-        labels=labels,
-        transform=data_transforms
-    )"""
-
+    # Inicjalizacja modelu YOLO z pretrenowanymi wagami
     model = YOLO("yolo11s.pt")
 
+    # Trening modelu
     model.train(
-        data=STANFORD_CARS_DATA,
-        epochs=3,
-        batch=16,
-        imgsz=640,
-        optimizer="Adam",
-        lr0=1e-4
+        data=STANFORD_CARS_DATA,  # Ścieżka do pliku konfiguracyjnego danych
+        epochs=3,  # Liczba epok treningowych
+        batch=16,  # Rozmiar batcha
+        imgsz=640,  # Rozmiar obrazów wejściowych
+        optimizer="Adam",  # Optymalizator
+        lr0=1e-4  # Początkowa wartość współczynnika uczenia
     )
 
+    # Walidacja modelu
     metrics = model.val()
     print("Wyniki walidacji:", metrics)
 
+    # Eksportowanie wytrenowanego modelu do formatu ONNX
     model.export(format="onnx", dynamic=True, simplify=False)
 
 
 if __name__ == '__main__':
+    # Główna funkcja uruchamiająca trening modelu na podzbiorze 500 obrazów
     train_model(subset_size=500)

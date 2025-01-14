@@ -2,6 +2,14 @@ import os
 import cv2
 import random
 
+
+# Program do wizualizacji wyników detekcji obiektów za pomocą YOLO
+# - Wybiera losowo 69 plików z etykietami z katalogu testowego
+# - Dla każdego pliku etykiet znajduje odpowiadający mu obraz
+# - Rysuje ramki ograniczające na obrazie na podstawie współrzędnych z pliku etykiet
+# - Zapisuje obrazy z narysowanymi ramkami do katalogu `visualisation`
+
+
 NUM_SAMPLES = 69
 # Paths
 OUTPUT_DIR = os.path.normpath("visualisation")

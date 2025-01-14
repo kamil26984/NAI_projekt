@@ -6,6 +6,12 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+# program wykorzystuje model ConditionalDETR do wykrywania samochodów na zdjęciach z datasetu
+# program zapisuje wykryte samochody do plików tekstowych w formacie YOLO tworząc bounding boxy\
+# program zapisuje również wizualizacje wykrytych samochodów do folderu output/detr_visualizations
+# wizualizację są tylko do sprawdzenia czy program działa poprawnie, będzie trzeba je usunąć przed wykorzystaniem programu do większej liczby zdjęć
+
+
 processor = AutoImageProcessor.from_pretrained("microsoft/conditional-detr-resnet-50", use_fast=True)
 model = ConditionalDetrForObjectDetection.from_pretrained("microsoft/conditional-detr-resnet-50")
 

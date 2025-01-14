@@ -2,6 +2,11 @@ import cv2
 import os
 from ultralytics import YOLO
 
+#program demonstrujący, ze mój wytrenowany model yolo radzi sobie z wykrywaniem samochodów na filmach
+#program zapisuje wykryte samochody do folderu output/cars
+#program działa na filmach z folderu datasets/vriv_divided/minitest
+#już się pewnie nie przyda ale dalej jestem dumny z mojego yolo
+
 if not os.path.exists("output/cars"):
     os.makedirs("output/cars")
 

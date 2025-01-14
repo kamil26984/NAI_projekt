@@ -2,6 +2,10 @@ import os
 import scipy.io
 import cv2
 
+
+#Konwersja danych z datasetu Stanford Cars danych w .mat do formatu YOLO
+
+
 # Ścieżki do datasetu
 mat_file_path = "stanford_cars/devkit/cars_train_annos.mat"
 images_dir = "stanford_cars/cars_train"

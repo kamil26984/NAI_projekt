@@ -5,7 +5,11 @@ from pathlib import Path
 import math
 
 
-# Funkcja do podziału datasetu
+# Funkcja do podziału datasetu na treningowy, walidacyjny i testowy
+# nie w tej postaci, ale część logiki przyda nam się do podziału tego, nad którym pracujemy
+
+
+
 def split_dataset(dataset_dir, output_dir, train_ratio=0.7, val_ratio=0.2, test_ratio=0.1):
     """
     Dzieli dataset na treningowy, walidacyjny i testowy.

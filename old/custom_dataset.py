@@ -2,10 +2,16 @@ import os
 from torch.utils.data import Dataset
 from PIL import Image
 
+# Ten program definiuje niestandardowy zbiór danych dla PyTorch, który ładuje obrazy i odpowiadające im etykiety z podanych katalogów.
+# Wynikiem działania programu jest obiekt `CustomDataset`, który można użyć do trenowania modeli w PyTorch.
+
+#szczerze mówiąc nie pamiętam ską to jest i po co ale boje się usuwać bo nigdy nie wiadomo w programowaniu
+
 class CustomDataset(Dataset):
     def __init__(self, images_dir, labels_dir, transform=None):
         self.images_dir = images_dir
         self.labels_dir = labels_dir
+        self.transform = transform
         self.transform = transform
 
         # Pobierz listę obrazów

@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 
+#Program do zmiany różnych klas pojazdów na jedną wspólną, był do innego datasetu i innego pomysłu ale może jakaś część kodu jeszcze się nada
+
 def remove_empty_lines(dataset_dir):
     """
     Usuwa puste linie z plików .txt w podanym katalogu.
