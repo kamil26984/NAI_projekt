@@ -5,20 +5,44 @@ import torch
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
-# program wykorzystuje model ConditionalDETR do wykrywania samochodów na zdjęciach z datasetu
-# program zapisuje wykryte samochody do plików tekstowych w formacie YOLO tworząc bounding boxy\
-# program zapisuje również wizualizacje wykrytych samochodów do folderu output/detr_visualizations
-# wizualizację są tylko do sprawdzenia czy program działa poprawnie, będzie trzeba je usunąć przed wykorzystaniem programu do większej liczby zdjęć
+print(torch.cuda.is_available())  # Powinno zwrócić True, jeśli GPU jest dostępne
+print(torch.cuda.current_device())  # Numer urządzenia GPU
+print(torch.cuda.get_device_name(torch.cuda.current_device()))  # Nazwa GPU
 
 
+# Mapa marek do klas (przykład, możesz rozszerzyć lub zmienić)
+brand_to_class_map = {
+    "audi": 0,
+    "bmw": 1,
+    "chevrolet": 2,
+    "dodge": 3,
+    "ford": 4,
+    "honda": 5,
+    "hyundai": 6,
+    "jeep": 7,
+    "kia": 8,
+    "lexus": 9,
+    "mazda": 10,
+    "mercedes": 11,
+    "nissan": 12,
+    "peugeot": 13,
+    "porsche": 14,
+    "toyota": 15,
+}
 
+# Sprawdzanie dostępności GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
-# Model Conditional DETR do wykrywania obiektów
+# Inicjalizacja modelu i procesora
 processor = AutoImageProcessor.from_pretrained("microsoft/conditional-detr-resnet-50", use_fast=True)
 model = ConditionalDetrForObjectDetection.from_pretrained("microsoft/conditional-detr-resnet-50")
 
-# Funkcja do wizualizacji wyników detekcji
+# Przeniesienie modelu na GPU (jeśli dostępne)
+model.to(device)
+print(model.config.id2label)
+
+# Funkcja wizualizacji
 def visualize_detections(image, results, output_path=None):
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     ax.imshow(image)
@@ -47,7 +71,7 @@ def visualize_detections(image, results, output_path=None):
     else:
         plt.show()
 
-# Główna funkcja do generowania bounding boxów i zapisu plików tekstowych w formacie YOLO
+# Funkcja generowania anotacji
 def generate_annotations(csv_file, vis_dir=None):
     with open(csv_file, 'r') as file:
         lines = file.readlines()[1:]  # Pomijamy nagłówek
@@ -56,47 +80,74 @@ def generate_annotations(csv_file, vis_dir=None):
         os.makedirs(vis_dir)
 
     for line in tqdm(lines, desc="Processing images"):
-        image_path, _ = line.strip().split(",")
+        image_path, brand = line.strip().split(",")
         if not os.path.exists(image_path):
             print(f"Image not found: {image_path}")
             continue
 
+        if brand not in brand_to_class_map:
+            print(f"Unknown brand: {brand}, skipping.")
+            continue
+
+        # Pobierz numer klasy z mapy
+        class_id = brand_to_class_map[brand]
+
         # Ładowanie obrazu
         image = Image.open(image_path).convert("RGB")
         inputs = processor(images=image, return_tensors="pt")
+
+        # Przeniesienie danych na GPU (jeśli dostępne)
+        inputs = {key: value.to(device) for key, value in inputs.items()}
 
         # Wykrywanie obiektów
         with torch.no_grad():
             outputs = model(**inputs)
 
         # Przetwarzanie wyników
-        target_sizes = torch.tensor([image.size[::-1]])  # (height, width)
+        target_sizes = torch.tensor([image.size[::-1]]).to(device)  # (height, width)
         results = processor.post_process_object_detection(outputs, target_sizes=target_sizes, threshold=0.5)[0]
 
+        # Filtrowanie i logowanie wyników detekcji
         if results["scores"].shape[0] == 0:
             print(f"No detections for {image_path}")
+            continue
+
+        # Wybór największego boxa na podstawie powierzchni
+        max_area = 0
+        best_box = None
+        best_score = None
+        for score, box in zip(results["scores"], results["boxes"]):
+            box_list = box.tolist()
+            width = box_list[2] - box_list[0]
+            height = box_list[3] - box_list[1]
+            area = width * height
+            if area > max_area:
+                max_area = area
+                best_box = box
+                best_score = score
+
+        if best_box is None:
+            print(f"No valid detections for {image_path}")
             continue
 
         # Ścieżka do pliku .txt
         annotation_path = os.path.splitext(image_path)[0] + ".txt"
         with open(annotation_path, 'w') as f:
-            for i in range(results["scores"].shape[0]):
-                box = results["boxes"][i].tolist()
-                label = results["labels"][i].item()
-                score = results["scores"][i].item()
+            box = best_box.tolist()
 
-                # Normalizacja do formatu YOLO
-                x_center = ((box[0] + box[2]) / 2) / image.size[0]
-                y_center = ((box[1] + box[3]) / 2) / image.size[1]
-                width = (box[2] - box[0]) / image.size[0]
-                height = (box[3] - box[1]) / image.size[1]
+            # Normalizacja do formatu YOLO
+            x_center = ((box[0] + box[2]) / 2) / image.size[0]
+            y_center = ((box[1] + box[3]) / 2) / image.size[1]
+            width = (box[2] - box[0]) / image.size[0]
+            height = (box[3] - box[1]) / image.size[1]
 
-                f.write(f"{label} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f} {score:.6f}\n")
+            print(f"Image: {image_path}, Brand: {brand}, Mapped Class ID: {class_id}, Score: {best_score:.2f}")
+            f.write(f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f} {best_score:.6f}\n")
 
         # Zapis wizualizacji (opcjonalnie)
         if vis_dir:
             vis_path = os.path.join(vis_dir, f"{os.path.splitext(os.path.basename(image_path))[0]}.jpg")
-            visualize_detections(image, results, output_path=vis_path)
+            visualize_detections(image, {"boxes": [best_box], "scores": [best_score], "labels": [torch.tensor(class_id)]}, output_path=vis_path)
 
     print(f"Annotations saved as .txt files next to corresponding images.")
 
