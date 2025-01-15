@@ -6,7 +6,7 @@ import csv
 # program wybiera markę z nazwy folderu, w którym znajduje się zdjęcie
 
 #zmienić na to jak kto ma ułożone datasety u siebie, wskazuje na główny folder setu
-DATASETS_DIR = "cars_make_models_reduced"
+DATASETS_DIR = r"C:\Users\Admin\Desktop\NAI PROEJKT\NAI_projekt\cars_make_models_reduced"
 
 
 

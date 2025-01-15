@@ -3,7 +3,7 @@ import random
 import shutil
 
 
-def create_reduced_dataset(base_dir, output_dir, sample_size=200):
+def create_reduced_dataset(base_dir, output_dir, sample_size=520):
     """
     Tworzy zmniejszony zestaw danych, losując maksymalnie `sample_size` zdjęć z każdej marki.
     Zdjęcia są kopiowane do folderów z nazwą marki w katalogu `output_dir`.
@@ -40,4 +40,4 @@ def create_reduced_dataset(base_dir, output_dir, sample_size=200):
 if __name__ == "__main__":
     base_dir = "datasets/cars_make_models"
     output_dir = "datasets/cars_make_models_reduced"
-    create_reduced_dataset(base_dir, output_dir, sample_size=200)
+    create_reduced_dataset(base_dir, output_dir, sample_size=520)

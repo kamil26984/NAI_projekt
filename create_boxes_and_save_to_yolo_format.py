@@ -21,13 +21,14 @@ brand_to_class_map = {
     "hyundai": 6,
     "jeep": 7,
     "kia": 8,
-    "lexus": 9,
-    "mazda": 10,
-    "mercedes": 11,
-    "nissan": 12,
-    "peugeot": 13,
-    "porsche": 14,
-    "toyota": 15,
+    "landrover": 9,
+    "lexus": 10,
+    "mazda": 11,
+    "mercedes": 12,
+    "nissan": 13,
+    "peugeot": 14,
+    "porsche": 15,
+    "toyota": 16,
 }
 
 # Sprawdzanie dostępności GPU
