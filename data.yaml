@@ -1,0 +1,6 @@
+train: divided_set/train
+val: divided_set/val
+test: divided_set/test
+
+nc: 17
+names: ["audi", "bmw", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "kia", "landrover", "lexus", "mazda", "mercedes", "nissan", "peugeot", "porsche", "toyota"]
