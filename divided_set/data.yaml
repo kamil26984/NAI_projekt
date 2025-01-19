@@ -1,5 +1,6 @@
 train: C:\Users\Admin\Desktop\NAI PROEJKT\NAI_projekt\divided_set\train
 val: C:\Users\Admin\Desktop\NAI PROEJKT\NAI_projekt\divided_set\val
+<<<<<<< Updated upstream
 
 # Liczba klas
 nc: 16
@@ -22,3 +23,9 @@ names:
   13: peugeot
   14: porsche
   15: toyota
+=======
+test: "test"
+
+nc: 17  # Liczba klas
+names: ["audi", "bmw", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "kia", "landrover", "lexus", "mazda", "mercedes", "nissan", "peugeot", "porsche", "toyota"]
+>>>>>>> Stashed changes
