@@ -11,3 +11,4 @@ OpenCV – images proccessing <br>
 ```pip install opencv-python``` <br>
 NumPy – arrays operations <br>
 ```pip install numpy```
+[Sprawozdanie_z_projektu.pdf](https://github.com/user-attachments/files/18588960/Sprawozdanie_z_projektu.pdf)
