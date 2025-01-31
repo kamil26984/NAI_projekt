@@ -2,16 +2,17 @@ import gradio as gr
 from ultralytics import YOLO
 from PIL import Image
 import cv2
+import os
 import numpy as np
 
+base_path = os.path.dirname(__file__)
 
-car_detector = YOLO("yolov5su.pt")  #Model do wykrywania samochodow ale same obiekty bez marek
+car_detector = YOLO(os.path.join(base_path, "yolov5su.pt"))  # Model do wykrywania samochodów ale same obiekty bez marek
 brand_detector = {
-    "YOLOv8": YOLO(r"C:\Users\mszym\nai\Nai_cardetection_app\YOLOv8m_car_detection\weights\best.pt"), #sciezki do wytrenowanych modeli
-    "YOLOv9": YOLO(r"C:\Users\mszym\nai\Nai_cardetection_app\YOLOv9t_car_detection\weights\best.pt"),
-    "YOLOv11": YOLO(r"C:\Users\mszym\nai\Nai_cardetection_app\YOLOv11s_car_detection\weights\best.pt"),
-    "YOLOv5": YOLO(r"C:\Users\mszym\nai\Nai_cardetection_app\YOLOv5n_car_detection\weights\best.pt")
-
+    "YOLOv8": YOLO(os.path.join(base_path, "YOLOv8m_car_detection", "weights", "best.pt")),  # ścieżki do wytrenowanych modeli
+    "YOLOv9": YOLO(os.path.join(base_path, "YOLOv9t_car_detection", "weights", "best.pt")),
+    "YOLOv11": YOLO(os.path.join(base_path, "YOLOv11s_car_detection", "weights", "best.pt")),
+    "YOLOv5": YOLO(os.path.join(base_path, "YOLOv5n_car_detection", "weights", "best.pt"))
 }
 
 def detect_cars(image):
