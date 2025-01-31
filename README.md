@@ -7,5 +7,5 @@ Ultralytics - for yolo models <br>
 ```pip install ultralytics```<br>
 # Launching a web application
 ```python .\NAI_projekt\Nai_cardetection_app\app2.py```
-Project summary: <br>
+# Project summary:
 [Sprawozdanie_z_projektu.pdf](https://github.com/user-attachments/files/18588960/Sprawozdanie_z_projektu.pdf)
